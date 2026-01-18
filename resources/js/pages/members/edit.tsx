@@ -40,6 +40,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Edit({ member }: Props) {
     const { data, setData, put, processing, errors } = useForm<{
         full_name: string;
+        nim: string;
         batch_year: string | number;
         whatsapp_number: string;
         status: Status;
@@ -47,6 +48,7 @@ export default function Edit({ member }: Props) {
         department: string;
     }>({
         full_name: member.full_name || '',
+        nim: member.nim || '',
         batch_year: member.batch_year || '',
         whatsapp_number: member.whatsapp_number || '',
         status: member.status || 'active',
@@ -94,6 +96,19 @@ export default function Edit({ member }: Props) {
                                         className={errors.full_name ? 'border-red-500 focus-visible:ring-red-500' : ''}
                                     />
                                     {errors.full_name && <p className="text-xs text-red-500 font-medium">{errors.full_name}</p>}
+                                </div>
+
+                                {/* --- Full Name --- */}
+                                <div className="space-y-2 md:col-span-2">
+                                    <Label htmlFor="nim">NIM <span className="text-red-500">*</span></Label>
+                                    <Input
+                                        id="nim"
+                                        placeholder="e.g. F11.2023.00076"
+                                        value={data.nim}
+                                        onChange={(e) => setData('nim', e.target.value)}
+                                        className={errors.nim ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                                    />
+                                    {errors.nim && <p className="text-xs text-red-500 font-medium">{errors.nim}</p>}
                                 </div>
 
                                 {/* --- Department --- */}

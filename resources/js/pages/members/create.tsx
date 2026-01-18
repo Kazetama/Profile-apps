@@ -35,6 +35,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Create() {
     const { data, setData, post, processing, errors, reset } = useForm({
         full_name: '',
+        nim: '',
         batch_year: '',
         whatsapp_number: '',
         status: 'active',
@@ -84,6 +85,19 @@ export default function Create() {
                                         className={errors.full_name ? 'border-red-500 focus-visible:ring-red-500' : ''}
                                     />
                                     {errors.full_name && <p className="text-xs text-red-500 font-medium">{errors.full_name}</p>}
+                                </div>
+
+                                {/* --- Full Name --- */}
+                                <div className="space-y-2 md:col-span-2">
+                                    <Label htmlFor="nim">NIM <span className="text-red-500">*</span></Label>
+                                    <Input
+                                        id="nim"
+                                        placeholder="e.g. F11.2023.00076"
+                                        value={data.nim}
+                                        onChange={(e) => setData('nim', e.target.value)}
+                                        className={errors.nim ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                                    />
+                                    {errors.nim && <p className="text-xs text-red-500 font-medium">{errors.nim}</p>}
                                 </div>
 
                                 {/* --- Department --- */}

@@ -191,7 +191,8 @@ export default function Index({ members, filters }: Props) {
                         <TableHeader>
                             <TableRow className="hover:bg-transparent border-b">
                                 <TableHead className="w-[60px] pl-6">Avatar</TableHead>
-                                <TableHead>Member Info</TableHead>
+                                <TableHead>Member Name</TableHead>
+                                <TableHead>NIM</TableHead>
                                 <TableHead className="hidden md:table-cell">Batch & Dept</TableHead>
                                 <TableHead className="hidden lg:table-cell">Gender</TableHead>
                                 <TableHead>Status</TableHead>
@@ -226,16 +227,19 @@ export default function Index({ members, filters }: Props) {
                                         <TableCell className="py-3">
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-foreground">{member.full_name}</span>
-                                                <span className="text-xs text-muted-foreground md:hidden mt-1">
-                                                    {member.batch_year} • {member.department}
-                                                </span>
+                                            </div>
+                                        </TableCell>
+
+                                        <TableCell className="py-3">
+                                            <div className="flex flex-col">
+                                                <span className="font-medium text-foreground">{member.nim}</span>
                                             </div>
                                         </TableCell>
 
                                         <TableCell className="hidden md:table-cell py-3">
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-medium">{member.department}</span>
-                                                <span className="text-xs text-muted-foreground">Class of {member.batch_year}</span>
+                                                <span className="text-xs text-muted-foreground">Angkatan of {member.batch_year}</span>
                                             </div>
                                         </TableCell>
 

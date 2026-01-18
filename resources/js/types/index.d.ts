@@ -44,6 +44,7 @@ export interface User {
 type Member = {
     id: number;
     full_name: string;
+    nim: string;
     batch_year: number;
     whatsapp_number: string;
     status: 'active' | 'inactive' | 'trial';

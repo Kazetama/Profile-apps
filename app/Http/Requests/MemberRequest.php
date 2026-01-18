@@ -15,6 +15,7 @@ class MemberRequest extends FormRequest
     {
         return [
             'full_name' => 'sometimes|string|max:255',
+            'nim' => 'sometimes|string|max:50',
             'batch_year' => 'sometimes|integer',
             'whatsapp_number' => 'sometimes|string',
             'status' => 'sometimes|in:active,inactive,trial',

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('members', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');
+            $table->string('nim')->unique();
             $table->integer('batch_year');
             $table->string('whatsapp_number');
             $table->enum('status', ['active', 'inactive', 'trial']);
