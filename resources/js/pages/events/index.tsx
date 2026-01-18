@@ -130,7 +130,7 @@ export default function Index({ events }: Props) {
                                             <TableCell className="py-6">
                                                 <Badge variant="outline" className="px-3 py-1 font-medium bg-background/50 border-primary/20 text-primary">
                                                     <Users className="mr-2 h-3.5 w-3.5" />
-                                                    {event.max_participants} Max
+                                                    {event.registrations_count} / {event.max_participants}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="py-6">

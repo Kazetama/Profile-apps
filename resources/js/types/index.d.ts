@@ -76,6 +76,7 @@ export type Event = {
     status: 'open' | 'closed'
     image?: string | null
     created_at: string
+    registrations_count: number;
     updated_at: string
 }
 

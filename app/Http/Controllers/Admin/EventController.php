@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Event;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\EventRequest;
+use App\Models\Event;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class EventController extends Controller
 {
     public function index()
     {
         return Inertia::render('events/index', [
-            'events' => Event::latest()->paginate(10),
+            'events' => Event::withCount('registrations')
+                ->latest()
+                ->paginate(10),
         ]);
     }
 
@@ -40,7 +41,7 @@ class EventController extends Controller
     public function edit(Event $event)
     {
         return Inertia::render('events/edit', [
-            'event' => $event,
+            'event' => $event->loadCount('registrations'),
         ]);
     }
 
@@ -72,4 +73,3 @@ class EventController extends Controller
         return back()->with('success', 'Event deleted');
     }
 }
-

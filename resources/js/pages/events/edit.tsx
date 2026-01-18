@@ -1,50 +1,67 @@
 import { useState } from 'react';
+import type { SVGProps } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
+import { type Event } from '@/types';
 
 // --- SHADCN COMPONENTS ---
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
+
+// --- ICONS ---
 import {
     Calendar,
     MapPin,
     Users,
     Type,
     AlignLeft,
-    Image as ImageIcon,
     ArrowLeft,
     Save,
     Trash2,
     UploadCloud,
-    // CheckCircle2
 } from 'lucide-react';
 
-export default function Edit({ event }: any) {
+/* ========================
+   TYPES
+======================== */
+type EditProps = {
+    event: Event;
+};
+
+/* ========================
+   COMPONENT
+======================== */
+export default function Edit({ event }: EditProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: dashboard().url },
         { title: 'Events', href: '/events' },
         { title: 'Edit Event', href: '#' },
     ];
 
-    // Inisialisasi preview dengan gambar lama dari storage
     const [imagePreview, setImagePreview] = useState<string | null>(
         event.image ? `/storage/${event.image}` : null
     );
 
     const { data, setData, post, processing, errors } = useForm({
-        _method: 'put', // Penting untuk spoofing PUT saat upload file
+        _method: 'put',
         title: event.title,
         description: event.description ?? '',
         event_date: event.event_date,
@@ -56,19 +73,19 @@ export default function Edit({ event }: any) {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setData('image', file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
+        if (!file) return;
+
+        setData('image', file);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const removeImage = () => {
         setData('image', null);
-        // Kembalikan preview ke gambar lama jika ada
         setImagePreview(event.image ? `/storage/${event.image}` : null);
     };
 
@@ -82,165 +99,253 @@ export default function Edit({ event }: any) {
             <Head title={`Edit - ${event.title}`} />
 
             <div className="flex flex-1 flex-col p-4 md:p-8 max-w-7xl mx-auto w-full">
-                {/* Back Button & Title */}
+                {/* Header */}
                 <div className="mb-6">
-                    <Link href="/events" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-2 transition-colors">
-                        <ArrowLeft className="h-4 w-4" /> Kembali ke Daftar Event
+                    <Link
+                        href="/events"
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-2 transition-colors"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Kembali ke Daftar Event
                     </Link>
-                    <h1 className="text-2xl font-bold tracking-tight">Edit Event</h1>
+                    <h1 className="text-2xl font-bold tracking-tight">
+                        Edit Event
+                    </h1>
                 </div>
 
-                <form onSubmit={submit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-                    {/* --- KOLOM KIRI (INFORMASI UTAMA) --- */}
+                <form
+                    onSubmit={submit}
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+                >
+                    {/* LEFT COLUMN */}
                     <div className="lg:col-span-8 space-y-6">
-                        <Card className="border-border/60 shadow-sm">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Informasi Dasar</CardTitle>
-                                <CardDescription>Detail konten dan deskripsi acara Anda.</CardDescription>
+                                <CardTitle>Informasi Dasar</CardTitle>
+                                <CardDescription>
+                                    Detail konten dan deskripsi acara
+                                </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title" className="flex items-center gap-2 font-medium">
-                                        <Type className="h-4 w-4 text-muted-foreground" /> Nama Event
+                                    <Label className="flex items-center gap-2">
+                                        <Type className="h-4 w-4" />
+                                        Nama Event
                                     </Label>
-                                    <Input id="title" value={data.title} onChange={e => setData('title', e.target.value)} />
-                                    {errors.title && <p className="text-xs text-destructive font-medium">{errors.title}</p>}
+                                    <Input
+                                        value={data.title}
+                                        onChange={(e) =>
+                                            setData('title', e.target.value)
+                                        }
+                                    />
+                                    {errors.title && (
+                                        <p className="text-xs text-destructive">
+                                            {errors.title}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="description" className="flex items-center gap-2 font-medium">
-                                        <AlignLeft className="h-4 w-4 text-muted-foreground" /> Deskripsi Acara
+                                    <Label className="flex items-center gap-2">
+                                        <AlignLeft className="h-4 w-4" />
+                                        Deskripsi
                                     </Label>
                                     <Textarea
-                                        id="description"
-                                        rows={10}
+                                        rows={8}
                                         value={data.description}
-                                        onChange={e => setData('description', e.target.value)}
-                                        className="resize-none"
+                                        onChange={(e) =>
+                                            setData(
+                                                'description',
+                                                e.target.value
+                                            )
+                                        }
                                     />
-                                    {errors.description && <p className="text-xs text-destructive font-medium">{errors.description}</p>}
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="border-border/60 shadow-sm">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Lokasi & Kapasitas</CardTitle>
+                                <CardTitle>Lokasi & Kapasitas</CardTitle>
                             </CardHeader>
                             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="location" className="flex items-center gap-2 font-medium">
-                                        <MapPin className="h-4 w-4 text-muted-foreground" /> Lokasi
+                                    <Label className="flex items-center gap-2">
+                                        <MapPin className="h-4 w-4" />
+                                        Lokasi
                                     </Label>
-                                    <Input id="location" value={data.location} onChange={e => setData('location', e.target.value)} />
-                                    {errors.location && <p className="text-xs text-destructive font-medium">{errors.location}</p>}
+                                    <Input
+                                        value={data.location}
+                                        onChange={(e) =>
+                                            setData(
+                                                'location',
+                                                e.target.value
+                                            )
+                                        }
+                                    />
                                 </div>
+
                                 <div className="space-y-2">
-                                    <Label htmlFor="max_participants" className="flex items-center gap-2 font-medium">
-                                        <Users className="h-4 w-4 text-muted-foreground" /> Batas Peserta
+                                    <Label className="flex items-center gap-2">
+                                        <Users className="h-4 w-4" />
+                                        Batas Peserta
                                     </Label>
-                                    <Input id="max_participants" type="number" value={data.max_participants} onChange={e => setData('max_participants', e.target.value)} />
-                                    {errors.max_participants && <p className="text-xs text-destructive font-medium">{errors.max_participants}</p>}
+                                    <Input
+                                        type="number"
+                                        value={data.max_participants}
+                                        onChange={(e) =>
+                                            setData(
+                                                'max_participants',
+                                                e.target.value
+                                            )
+                                        }
+                                    />
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
 
-                    {/* --- KOLOM KANAN (BANNER & STATUS) --- */}
+                    {/* RIGHT COLUMN */}
                     <div className="lg:col-span-4 space-y-6">
-
-                        {/* Status Card */}
-                        <Card className="border-border/60 shadow-sm bg-muted/20">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Status & Jadwal</CardTitle>
+                                <CardTitle>Status & Jadwal</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label className="flex items-center gap-2 font-medium">
-                                        <CheckCircle2 className="h-4 w-4 text-muted-foreground" /> Status Registrasi
+                                    <Label className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4" />
+                                        Status
                                     </Label>
-                                    <Select value={data.status} onValueChange={(v) => setData('status', v)}>
-                                        <SelectTrigger className="bg-background">
-                                            <SelectValue placeholder="Pilih Status" />
+                                    <Select
+                                        value={data.status}
+                                        onValueChange={(v) =>
+                                            setData('status', v as 'open' | 'closed')
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="open">Open / Aktif</SelectItem>
-                                            <SelectItem value="closed">Closed / Berakhir</SelectItem>
+                                            <SelectItem value="open">
+                                                Open
+                                            </SelectItem>
+                                            <SelectItem value="closed">
+                                                Closed
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="flex items-center gap-2 font-medium">
-                                        <Calendar className="h-4 w-4 text-muted-foreground" /> Waktu Acara
+                                    <Label className="flex items-center gap-2">
+                                        <Calendar className="h-4 w-4" />
+                                        Waktu Acara
                                     </Label>
                                     <Input
                                         type="datetime-local"
                                         value={data.event_date}
-                                        onChange={e => setData('event_date', e.target.value)}
-                                        className="bg-background"
+                                        onChange={(e) =>
+                                            setData(
+                                                'event_date',
+                                                e.target.value
+                                            )
+                                        }
                                     />
-                                    {errors.event_date && <p className="text-xs text-destructive font-medium">{errors.event_date}</p>}
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Banner Card */}
-                        <Card className="border-border/60 shadow-sm overflow-hidden">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Event Banner</CardTitle>
+                                <CardTitle>Event Banner</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    <div className="relative group aspect-video rounded-lg border-2 border-dashed border-muted-foreground/20 overflow-hidden bg-muted/40">
+                                    <div className="relative aspect-video rounded-lg border-2 border-dashed overflow-hidden">
                                         {imagePreview ? (
                                             <>
-                                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                                    <Button type="button" variant="secondary" size="sm" onClick={() => document.getElementById('image-upload')?.click()}>
-                                                        Ubah Banner
+                                                <img
+                                                    src={imagePreview}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center gap-2">
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            document
+                                                                .getElementById(
+                                                                    'image-upload'
+                                                                )
+                                                                ?.click()
+                                                        }
+                                                    >
+                                                        Ubah
                                                     </Button>
-                                                    {data.image && (
-                                                        <Button type="button" variant="destructive" size="sm" onClick={removeImage}>
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
+                                                    <Button
+                                                        type="button"
+                                                        variant="destructive"
+                                                        size="sm"
+                                                        onClick={removeImage}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
                                                 </div>
                                             </>
                                         ) : (
-                                            <label htmlFor="image-upload" className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-muted/60 transition-colors">
-                                                <UploadCloud className="h-8 w-8 text-muted-foreground mb-2" />
-                                                <span className="text-xs font-medium">Upload Banner Baru</span>
+                                            <label
+                                                htmlFor="image-upload"
+                                                className="flex flex-col items-center justify-center h-full cursor-pointer"
+                                            >
+                                                <UploadCloud className="h-8 w-8 mb-2" />
+                                                <span className="text-xs">
+                                                    Upload Banner
+                                                </span>
                                             </label>
                                         )}
-                                        <input id="image-upload" type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                        <input
+                                            id="image-upload"
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                        />
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground italic text-center leading-tight">
-                                        *Biarkan kosong jika tidak ingin mengubah gambar lama.
-                                    </p>
-                                    {errors.image && <p className="text-xs text-destructive font-medium text-center">{errors.image}</p>}
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-col gap-2">
-                            <Button type="submit" className="w-full" disabled={processing}>
-                                {processing ? 'Menyimpan...' : <><Save className="mr-2 h-4 w-4" /> Simpan Perubahan</>}
-                            </Button>
-                            <Button variant="ghost" asChild className="w-full">
-                                <Link href="/events">Batal</Link>
-                            </Button>
-                        </div>
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={processing}
+                        >
+                            <Save className="h-4 w-4 mr-2" />
+                            Simpan Perubahan
+                        </Button>
                     </div>
-
                 </form>
             </div>
         </AppLayout>
     );
 }
 
-const CheckCircle2 = (props: any) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" /><path d="m9 12 2 2 4-4" /></svg>
-)
+/* ========================
+   ICON
+======================== */
+const CheckCircle2 = (props: SVGProps<SVGSVGElement>) => (
+    <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+        <path d="m9 12 2 2 4-4" />
+    </svg>
+);
